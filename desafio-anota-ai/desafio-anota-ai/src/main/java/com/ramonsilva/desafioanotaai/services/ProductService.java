@@ -5,6 +5,8 @@ import com.ramonsilva.desafioanotaai.domain.products.Product;
 import com.ramonsilva.desafioanotaai.domain.products.ProductDTO;
 import com.ramonsilva.desafioanotaai.domain.products.exceptions.ProductNotFoundException;
 import com.ramonsilva.desafioanotaai.repositories.ProductRepository;
+import com.ramonsilva.desafioanotaai.services.aws.AwsSnsService;
+import com.ramonsilva.desafioanotaai.services.aws.MessageDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,11 +15,12 @@ import java.util.List;
 public class ProductService {
     private final CategoryService categoryService;
     private final ProductRepository repository;
-//    private final AwsSnsService snsService;
+    private final AwsSnsService snsService;
 
-    public ProductService(CategoryService categoryService, ProductRepository productRepository){
+    public ProductService(CategoryService categoryService, ProductRepository repository, AwsSnsService snsService) {
         this.categoryService = categoryService;
-        this.repository = productRepository;
+        this.repository = repository;
+        this.snsService = snsService;
     }
 
     public Product insert(ProductDTO productData){
@@ -27,7 +30,7 @@ public class ProductService {
 
         this.repository.save(newProduct);
 
-//        this.snsService.publish(new MessageDTO(newProduct.toString()));
+        this.snsService.publish(new MessageDTO(newProduct.toString()));
 
         return newProduct;
     }
@@ -46,7 +49,7 @@ public class ProductService {
 
         this.repository.save(product);
 
-//        this.snsService.publish(new MessageDTO(product.toString()));
+        this.snsService.publish(new MessageDTO(product.toString()));
 
         return product;
     }
